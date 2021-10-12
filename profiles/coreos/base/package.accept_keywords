@@ -36,7 +36,7 @@ dev-util/checkbashisms
 
 =net-libs/libmicrohttpd-0.9.55 ~amd64 ~arm64
 
-=net-misc/openssh-8.7_p1-r1 ~amd64 ~arm64
+=net-misc/openssh-8.8_p1-r2 ~amd64 ~arm64
 
 # To address security issues like CVE-2021-31879, we need to accept
 # keywords for wget 1.21.2.
