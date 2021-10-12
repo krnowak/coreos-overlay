@@ -1,6 +1,3 @@
-# Difference to upstream from ./update_ebuilds:
-# - Ported changes from 11d6f23704e7ab84191e28e034816bfdb151d406
-#
 # Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
@@ -24,7 +21,7 @@ HPN_PATCHES=(
 )
 
 SCTP_VER="1.2" SCTP_PATCH="${PARCH}-sctp-${SCTP_VER}.patch.xz"
-X509_VER="13.2" X509_PATCH="${PARCH}+x509-${X509_VER}.diff.gz"
+X509_VER="13.2.3" X509_PATCH="${PARCH}+x509-${X509_VER}.diff.gz"
 
 DESCRIPTION="Port of OpenBSD's free SSH release"
 HOMEPAGE="https://www.openssh.com/"
@@ -48,7 +45,7 @@ REQUIRED_USE="
 	ldns? ( ssl )
 	pie? ( !static )
 	static? ( !kerberos !pam )
-	X509? ( !sctp !security-key ssl !xmss )
+	X509? ( !sctp ssl !xmss )
 	xmss? ( ssl  )
 	test? ( ssl )
 "
@@ -177,7 +174,7 @@ src_prepare() {
 			"${S}"/version.h || die "Failed to sed-in SCTP patch version"
 		PATCHSET_VERSION_MACROS+=( 'SSH_SCTP' )
 
-		einfo "Disabling know failing test (cfgparse) caused by SCTP patch ..."
+		einfo "Disabling known failing test (cfgparse) caused by SCTP patch ..."
 		sed -i \
 			-e "/\t\tcfgparse \\\/d" \
 			"${S}"/regress/Makefile || die "Failed to disable known failing test (cfgparse) caused by SCTP patch"
@@ -188,7 +185,7 @@ src_prepare() {
 		mkdir "${hpn_patchdir}" || die
 		cp $(printf -- "${DISTDIR}/%s\n" "${HPN_PATCHES[@]}") "${hpn_patchdir}" || die
 		pushd "${hpn_patchdir}" &>/dev/null || die
-		eapply "${FILESDIR}"/${P}-hpn-${HPN_VER}-glue.patch
+		eapply "${FILESDIR}"/${PN}-8.7_p1-hpn-${HPN_VER}-glue.patch
 		use X509 && eapply "${FILESDIR}"/${PN}-8.7_p1-hpn-${HPN_VER}-X509-glue.patch
 		use sctp && eapply "${FILESDIR}"/${PN}-8.5_p1-hpn-${HPN_VER}-sctp-glue.patch
 		popd &>/dev/null || die
@@ -420,6 +417,8 @@ src_install() {
 	emake install-nokeys DESTDIR="${D}"
 	fperms 600 /etc/ssh/sshd_config
 	dobin contrib/ssh-copy-id
+	newinitd "${FILESDIR}"/sshd-r1.initd sshd
+	newconfd "${FILESDIR}"/sshd-r1.confd sshd
 
 	if use pam; then
 		newpamd "${FILESDIR}"/sshd.pam_include.2 sshd
