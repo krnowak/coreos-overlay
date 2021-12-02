@@ -36,7 +36,12 @@ done
 
 popd >/dev/null || exit
 
-URL="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tag/?h=v${VERSION_NEW}"
+curl -sA 'Chrome' -L 'http://www.google.com/search?hl=en&q=site%3Alwn.net+linux+'"${VERSION_NEW}" -o search.html
+URL=$(grep -o 'https://lwn.net/Articles/[0-9]\+' search.html | head -n 1)
+if [[ ! "${URL}" ]]; then
+    URL="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tag/?h=v${VERSION_NEW}"
+fi
+rm search.html
 
 generate_update_changelog 'Linux' "${VERSION_NEW}" "${URL}" 'linux'
 
