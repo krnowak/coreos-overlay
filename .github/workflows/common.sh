@@ -45,6 +45,8 @@ function prepare_git_repo() {
   git -C "${SDK_OUTER_SRCDIR}/third_party/coreos-overlay" remote add our_remote "${our_remote_url}"
   git -C "${SDK_OUTER_SRCDIR}/third_party/coreos-overlay" fetch our_remote
   git -C "${SDK_OUTER_SRCDIR}/third_party/coreos-overlay" checkout -B "${BASE_BRANCH}" "our_remote/${BASE_BRANCH}"
+  git -C "${SDK_OUTER_SRCDIR}/third_party/coreos-overlay" status
+  git -C "${SDK_OUTER_SRCDIR}/third_party/coreos-overlay" show --stat
 }
 
 # caller needs to set pass a parameter as a branch name to be created.
